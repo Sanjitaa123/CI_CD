@@ -1,0 +1,43 @@
+name: Super-Linter
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  super-linter:
+    name: Lint Code Base
+    runs-on: ubuntu-latest
+    timeout-minutes: 5  # Faster feedback
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # Required for VALIDATE_ALL_CODEBASE
+
+      - name: Run Super-Linter
+        uses: github/super-linter@v5
+        env:
+          # Core configuration
+          DEFAULT_BRANCH: main
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          VALIDATE_ALL_CODEBASE: false  # Disable all first
+          
+          # Only enable essential file format validators
+          VALIDATE_YAML: true
+          VALIDATE_JSON: true
+          VALIDATE_MARKDOWN: true
+          VALIDATE_BASH: true
+          
+          # Disable language linters unless configured
+          VALIDATE_JAVASCRIPT_ES: false  # Disabled - no .eslintrc.json
+          VALIDATE_PYTHON: false
+          VALIDATE_DOCKER: false
+          
+          # Error handling
+          DISABLE_ERRORS: false
+          OUTPUT_DETAILS: detailed
+          OUTPUT_FORMAT: github-annotations
